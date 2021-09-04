@@ -1,2 +1,3 @@
-# useful
-Hier steht noch nicht besonders viel, siehe dich gerne um und benutze was dir gefällt. Copyright oder Credits brauchst du nicht :)
+# Useful Scripts
+Here is almost nothing, but take a look around and use what you enjoy!
+You don't have to give any Credits or &copyCopyrights
