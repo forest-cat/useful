@@ -1,2 +1,2 @@
 # useful
-In this repository you will find some scripts that might be useful for you
+Hier steht noch nicht besonders viel, siehe dich gerne um und benutze was dir gefällt. Copyright oder Credits brauchst du nicht :)
