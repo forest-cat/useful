@@ -47,7 +47,7 @@ if __name__ == '__main__':
             kuenstler, songs = get_tracks(tracks)
             for i, song in enumerate(songs):
                 url = search_link + str(kuenstler[i]) + " - " + str(song)
-                url = url.replace("&", "").replace(" ", "+")
+                url = url.replace("&", "").replace(" ", "+").replace("ä", "ae").replace("ü", "ue"). replace("ö", "oe")
                 html = urllib.request.urlopen(url)
                 video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
                 youtube_vid = watch_link + video_ids[0]
