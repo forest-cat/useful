@@ -20,7 +20,6 @@ def get_tracks(results):
 
     for i, item in enumerate(results['items']):
         track = item['track']
-        #print("   ", i+1, track['artists'][0]['name'], track['name'])
         artists.append(track['artists'][0]['name'])
         tracks.append(track['name'])
     return artists, tracks
