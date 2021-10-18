@@ -7,6 +7,7 @@ import spotipy
 import os
 import urllib.request
 import re
+import string
 from spotipy.oauth2 import SpotifyOAuth
 
 CLIENT_ID="Your CLient_ID goes here"
@@ -46,8 +47,16 @@ if __name__ == '__main__':
             tracks = results['tracks']
             kuenstler, songs = get_tracks(tracks)
             for i, song in enumerate(songs):
-                url = search_link + str(kuenstler[i]) + " - " + str(song)
-                url = url.replace("&", "").replace(" ", "+").replace("ä", "ae").replace("ü", "ue"). replace("ö", "oe")
+                pre_url = str(kuenstler[i]) + " - " + str(song)
+                print(f"Vorher: {pre_url}")
+                pre_url = pre_url.replace(" ", "+").replace("ä", "ae").replace("ü", "ue"). replace("ö", "oe")
+                for char in string.punctuation:
+                    if char != "+":
+                        pre_url = pre_url.replace(char, "")
+                pre_url = pre_url.encode("ascii", "ignore").decode()
+                url = search_link + pre_url
+                print(f"Nachher: {url}")
+                
                 html = urllib.request.urlopen(url)
                 video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
                 youtube_vid = watch_link + video_ids[0]
