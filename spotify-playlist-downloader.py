@@ -14,7 +14,7 @@ AUTH_URL = 'https://accounts.spotify.com/api/token' # This URL points towards th
 LIMIT = 50 # Change how much Songs per request will be received, range from 1-100 allowed.
 OFFSET = 0 # Please don't change this one to make sure every Song is covered and donwloaded
 
-PATH="D:\Bibliotheken\Musik\Spotify-test"
+PATH="Your Path here" # Here is the Path were the files should be saved
 
 
 watch_link = "https://www.youtube.com/watch?v="
