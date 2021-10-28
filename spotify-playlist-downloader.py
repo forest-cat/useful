@@ -54,7 +54,7 @@ def make_request(headers, parameters):
 def download_track(song_vid_list):
     os.chdir(PATH)
     for video_link in song_vid_list:
-        os.system("youtube-dl -x --audio-format mp3 -i" + video_link)
+        os.system("youtube-dl -x --audio-format mp3 -i " + video_link)
 
 def create_thread(function, name, arguments, ):
     thread = threading.Thread(target=function, name=name, args=(arguments,), daemon=True)
