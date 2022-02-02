@@ -23,3 +23,4 @@ def is_palindrome(string):
         return False
 
 print(is_palindrome("racecar"))
+# print(True if "racecar" == "racecar"[::-1] else False) # Faster and cleaner way ^^
