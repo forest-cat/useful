@@ -74,7 +74,6 @@ def getHiddenImageSize(encodedImage: Image):
                 elif counter < 32:
                     sizeY += str(color % 2)
                     counter += 1
-    print(f"Size: {int(sizeX, 2), int(sizeY, 2)}")
     return (int(sizeX, 2), int(sizeY, 2))
 
 
