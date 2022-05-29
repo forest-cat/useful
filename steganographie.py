@@ -111,6 +111,8 @@ def decodeImage(encodedImage: Image, newImagePixels, size: tuple):
             newImagePixels[x,y] = tuple(tupleAsList)    
     return newImagePixels
 
+def checkSize(origImageSize: tuple, hideImageSize: tuple):
+    return False if origImageSize[0] * origImageSize[1] * 4 < hideImageSize[0] * hideImageSize[1] * 4 * 8 + 32 else True
 
 if __name__ == "__main__":
     ACTION = input("Encode or decode? (e/d): ")
@@ -133,6 +135,15 @@ if __name__ == "__main__":
             smallImageString = readImage(smallImage)
             bigImagePixels = bigImage.load()
             console.log(f"[green]Reading Images[/green]")
+
+            if not checkSize(origImageSize=bigImage.size, hideImageSize=smallImage.size):
+                console.log(f"[red]The Image you want to hide is not small enough or the medium Image is to small.\nProceeding can result in the image being only half visible or the Programm crashing... [/red]")
+                ans = input("Do you want to continue? (y/N): ")
+                if ans.lower() == "y":
+                    console.log(f"[green]Proceeding...[/green]")
+                else:
+                    console.log(f"[red]Aborting...[/red]")
+                    exit()
 
             bigImagePixels = stegoImage(origImage=bigImage, origPixels=bigImagePixels, hideImage=smallImageString, hideImageSize=smallImage.size)
 
