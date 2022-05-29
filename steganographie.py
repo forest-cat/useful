@@ -110,6 +110,7 @@ def decodeImage(encodedImage: Image, newImagePixels, size: tuple):
             newImagePixels[x,y] = tuple(tupleAsList)    
     return newImagePixels
 
+# Checks the Size of both images and returns if the hide image is small enough and fits in the medium image
 def checkSize(origImageSize: tuple, hideImageSize: tuple):
     return False if origImageSize[0] * origImageSize[1] * 4 < hideImageSize[0] * hideImageSize[1] * 4 * 8 + 32 else True
 
