@@ -11,6 +11,8 @@ import os
 
 console = Console()
 
+
+# Reads Image and Returns it as Byte String
 def readImage(image: Image):
     pixels = image.load()
     colors = []
@@ -22,41 +24,76 @@ def readImage(image: Image):
     colors = "".join(colors)
     return colors
 
-def stegoImage(origImage: Image, origPixels, hideImage: str):
+# Takes an Image and a Byte String and writes the Byte String to the Image and Returns the new Image
+def stegoImage(origImage: Image, origPixels, hideImage: str, hideImageSize: tuple):
     counter = 0
+    hideImageSize = "".join([f"{size:016b}" for size in hideImageSize])
     for x in range(origImage.size[0]):
         for y in range(origImage.size[1]):
             for i,color in enumerate(origPixels[x,y]):
                 tupleAsList = list(origPixels[x,y])
-                if counter < len(hideImage):
-                    if int(hideImage[counter]) == 0:
+                if counter < 32:
+                    if int(hideImageSize[counter]) == 0:
                         if origPixels[x,y][i] % 2 == 0:
                             pass
                         else:
                             tupleAsList[i] -= 1
-                    if int(hideImage[counter]) == 1:
+                    if int(hideImageSize[counter]) == 1:
                         if origPixels[x,y][i] % 2 == 1:
                             pass
                         else:
                             tupleAsList[i] += 1
-                    counter+=1
-                    origPixels[x,y] = tuple(tupleAsList)
+                    counter += 1
+                else:
+                    if counter < len(hideImage)+32:
+                        if int(hideImage[counter-32]) == 0:
+                            if origPixels[x,y][i] % 2 == 0:
+                                pass
+                            else:
+                                tupleAsList[i] -= 1
+                        if int(hideImage[counter-32]) == 1:
+                            if origPixels[x,y][i] % 2 == 1:
+                                pass
+                            else:
+                                tupleAsList[i] += 1
+                        counter+=1
+                origPixels[x,y] = tuple(tupleAsList)
     return origPixels
 
+# get the size of the hidden image
+def getHiddenImageSize(encodedImage: Image):
+    encodedImagePixels = encodedImage.load()
+    sizeX, sizeY = '',''
+    counter = 0
+    for x in range(encodedImage.size[0]):
+        for y in range(encodedImage.size[1]):
+            for color in encodedImagePixels[x,y]:
+                if counter < 16:
+                    sizeX += str(color % 2)
+                    counter += 1
+                elif counter < 32:
+                    sizeY += str(color % 2)
+                    counter += 1
+    print(f"Size: {int(sizeX, 2), int(sizeY, 2)}")
+    return (int(sizeX, 2), int(sizeY, 2))
+
+
+# Takes the Encoded Image and a new empty Image and the hidden Image Size and Returns the decoded Image as Pixel Matrix
 def decodeImage(encodedImage: Image, newImagePixels, size: tuple):
     encodedImagePixels = encodedImage.load()
     decodedImageString = ""
     decodedImageArray = []
-    counter = 0
-    sizeMultiplied = size[0] * size[1] * 4 * 8 # 4 colors RGBA * 8 bits per color
+    counter = 0                
+    sizeMultiplied = size[0] * size[1] * 4 * 8 + 32 # 4 colors RGBA * 8 bits per color 
     for x in range(encodedImage.size[0]):
         for y in range(encodedImage.size[1]):
             for color in encodedImagePixels[x,y]:
                 if counter < sizeMultiplied:
                     decodedImageString += str(color % 2)
-                    counter+=1
+                counter+=1
+
     tmparrray = []
-    for entry in decodedImageString:
+    for entry in decodedImageString[32:]:
         tmparrray.append(entry)
         if len(tmparrray) == 8:
             tmparrray = "".join(tmparrray)
@@ -80,9 +117,9 @@ if __name__ == "__main__":
 
     if ACTION.lower() == "e":
         os.chdir(os.path.dirname(__file__))
-        print("\n##################### Encoding enabled #####################")
+        print("\n##################### Encoding enabled #####################\n")
         bigImagePath = input("Enter the file path of the image you want to use as medium: ")
-        smallImagePath = input("Enter the file path of the image you want to hide (it has to be smaller than the previous Image): ")
+        smallImagePath = input("Enter the file path of the image you want to hide (it has to be a lot smaller than the previous Image): ")
         
         with console.status("[bold yellow]Encoding Image...") as status:
             bigImage = Image.open(bigImagePath)
@@ -97,7 +134,7 @@ if __name__ == "__main__":
             bigImagePixels = bigImage.load()
             console.log(f"[green]Reading Images[/green]")
 
-            bigImagePixels = stegoImage(origImage=bigImage, origPixels=bigImagePixels, hideImage=smallImageString)
+            bigImagePixels = stegoImage(origImage=bigImage, origPixels=bigImagePixels, hideImage=smallImageString, hideImageSize=smallImage.size)
 
             bigImage.save('EncodedHiddenImage.png')
             console.log(f"[green]Saved Image as:[/green] [yellow]EncodedHiddenImage.png[/yellow]")
@@ -105,19 +142,17 @@ if __name__ == "__main__":
     elif ACTION.lower() == "d":
         os.chdir(os.path.dirname(__file__))
         
-        print("\n##################### Decoding enabled #####################")
+        print("\n##################### Decoding enabled #####################\n")
         
         encodedImagePath = input("Enter the file path of the image you want to decode: ")
-        hiddenImageSizeX = int(input("Enter the [X] size of the hidden image: "))
-        hiddenImageSizeY = int(input("Enter the [Y] size of the hidden image: "))
-        hiddenImageSize = (hiddenImageSizeX, hiddenImageSizeY)
             
         with console.status("[bold green]Decoding Image...") as status:
             encodedImage = Image.open(encodedImagePath)
             console.log(f"[green]Opened Encoded Image[/green]")
             encodedImage = encodedImage.convert('RGBA')
             console.log(f"[green]Converted from[/green] [yellow]RGB[/yellow] [green]to[/green] [violet]RGBA[/violet]")
-
+            
+            hiddenImageSize = getHiddenImageSize(encodedImage)
             decoded = Image.new("RGBA", hiddenImageSize)
             console.log(f"[green]Created new empty Image[/green]")
             decodedpix = decoded.load()
